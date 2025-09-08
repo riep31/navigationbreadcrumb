@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Breadcrumb Component</title>
+</head>
+<body>
+    <!-- Navigation Breadcrumb Component -->
+    <div class="breadcrumb" id="breadcrumb">
+        <div class="breadcrumb-nav">
+            <span class="home-icon">🏠</span>
+            <a href="#" onclick="goBackToDashboard()">Dashboard Utama</a>
+            <span class="breadcrumb-separator">›</span>
+            <span class="breadcrumb-current">Finish Goods</span>
+        </div>
+        <div class="breadcrumb-date" id="breadcrumbDate">
+            <div class="date-main" id="currentDate">Loading...</div>
+            <div class="date-day" id="currentDay">Loading...</div>
+        </div>
+    </div>
+
+    <style>
+        /* =========================
+           BREADCRUMB CSS STYLES
+        ========================= */
+        
+        .breadcrumb {
+            margin: 0 20px 15px 20px;
+            padding: 14px 21px;
+            background: linear-gradient(135deg, #f5f5f5 0%, #dcdcdc 30%, #b0b0b0 70%, #707070 100%);
+            border-radius: 15px;
+            font-size: 15px;
+            color: #495057;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .breadcrumb::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 30%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .breadcrumb-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .breadcrumb-nav .home-icon {
+            font-size: 16px;
+            margin-right: 5px;
+        }
+        
+        .breadcrumb a {
+            color: #495057;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            background: rgba(108, 117, 125, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .breadcrumb a:hover {
+            background: rgba(108, 117, 125, 0.5);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            color: #2c3e50;
+        }
+        
+        .breadcrumb-separator {
+            color: #6c757d;
+            margin: 0 5px;
+            font-weight: bold;
+        }
+        
+        .breadcrumb-current {
+            color: #2c3e50;
+            font-weight: bold;
+            text-shadow: none;
+        }
+        
+        .breadcrumb-date {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            font-size: 13px;
+            z-index: 1;
+            position: relative;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            padding: 10px 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(44, 62, 80, 0.3);
+            color: #495057;
+            box-shadow: 0 4px 15px rgba(44, 62, 80, 0.3);
+        }
+        
+        .breadcrumb-date .date-main {
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 2px;
+            color: white;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .breadcrumb-date .date-day {
+            opacity: 1;
+            font-size: 13px;
+            text-transform: capitalize;
+            color: white;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .breadcrumb {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+                padding: 15px;
+            }
+            
+            .breadcrumb-date {
+                align-self: flex-end;
+                margin-top: 10px;
+            }
+        }
+    </style>
+
+    <script>
+        /* =========================
+           BREADCRUMB JAVASCRIPT
+        ========================= */
+        
+        /**
+         * Update current date and time in breadcrumb
+         * Updates both date and day of week in Indonesian
+         */
+        function updateBreadcrumbDate() {
+            const now = new Date();
+            
+            // Indonesian day names
+            const dayNames = [
+                'minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'
+            ];
+            
+            // Indonesian month names
+            const monthNames = [
+                'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+            ];
+            
+            const dayName = dayNames[now.getDay()];
+            const day = now.getDate();
+            const month = monthNames[now.getMonth()];
+            const year = now.getFullYear();
+            
+            // Add calendar icon to the date string
+            const dateString = `📅 ${day} ${month} ${year}`;
+            
+            // Update DOM elements
+            const currentDateEl = document.getElementById('currentDate');
+            const currentDayEl = document.getElementById('currentDay');
+            
+            if (currentDateEl) currentDateEl.innerHTML = dateString;
+            if (currentDayEl) currentDayEl.innerHTML = dayName;
+        }
+        
+        /**
+         * Get dashboard URL from various sources
+         * Tries multiple methods to determine the correct return URL
+         */
+        function getDashboardUrl() {
+            console.log('Current URL:', window.location.href);
+            console.log('Current Path:', window.location.pathname);
+            console.log('Referrer:', document.referrer);
+            
+            // Try to get dashboard URL from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const returnUrl = urlParams.get('return');
+            if (returnUrl) {
+                console.log('Using return URL:', returnUrl);
+                return decodeURIComponent(returnUrl);
+            }
+            
+            // Try to get from document referrer
+            if (document.referrer && document.referrer !== window.location.href) {
+                console.log('Using referrer URL:', document.referrer);
+                return document.referrer;
+            }
+            
+            // Fallback URLs for GitHub Pages or similar hosting
+            const fallbackUrls = [
+                'https://riep31.github.io/UtilisasiWarehouse/dashboard.html',
+                '/UtilisasiWarehouse/dashboard.html',
+                './dashboard.html',
+                '../dashboard.html'
+            ];
+            
+            console.log('Using fallback URLs:', fallbackUrls);
+            return fallbackUrls[0];
+        }
+        
+        /**
+         * Navigate back to dashboard
+         * Uses multiple methods to ensure successful navigation
+         */
+        function goBackToDashboard() {
+            console.log('Navigating back to dashboard...');
+            
+            try {
+                // Method 1: Use referrer if available and valid
+                if (document.referrer && 
+                    document.referrer !== window.location.href && 
+                    document.referrer.includes('dashboard.html')) {
+                    console.log('Using referrer method');
+                    window.location.href = document.referrer;
+                    return;
+                }
+                
+                // Method 2: Use browser history if available
+                if (window.history.length > 1) {
+                    console.log('Using history back method');
+                    window.history.back();
+                    return;
+                }
+                
+                // Method 3: Navigate to specific dashboard URL
+                const dashboardUrl = getDashboardUrl();
+                console.log('Using direct navigation to:', dashboardUrl);
+                if (dashboardUrl) {
+                    window.location.href = dashboardUrl;
+                } else {
+                    // Method 4: Fallback confirmation
+                    console.log('Using fallback method');
+                    if (confirm('Tidak dapat menemukan dashboard. Apakah ingin ke halaman utama?')) {
+                        window.location.href = 'https://riep31.github.io/UtilisasiWarehouse/';
+                    }
+                }
+            } catch (error) {
+                console.error('Error in goBackToDashboard:', error);
+                // Final fallback
+                if (confirm('Terjadi error saat navigasi. Apakah ingin ke halaman utama?')) {
+                    window.location.href = 'https://riep31.github.io/UtilisasiWarehouse/';
+                }
+            }
+        }
+        
+        /**
+         * Update page title and breadcrumb based on URL parameters or referrer
+         * Customizes the navigation context dynamically
+         */
+        function updateNavigationContext() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const returnUrl = urlParams.get('return');
+            const returnName = urlParams.get('returnName') || 'Dashboard Utama';
+            
+            if (returnUrl || document.referrer) {
+                const breadcrumbNav = document.querySelector('.breadcrumb-nav');
+                if (breadcrumbNav) {
+                    breadcrumbNav.innerHTML = `
+                        <span class="home-icon">🏠</span>
+                        <a href="#" onclick="goBackToDashboard()">${returnName}</a>
+                        <span class="breadcrumb-separator">›</span>
+                        <span class="breadcrumb-current">Finish Goods</span>
+                    `;
+                }
+            }
+        }
+        
+        /**
+         * Initialize breadcrumb component
+         * Sets up date updates and navigation context
+         */
+        function initializeBreadcrumb() {
+            // Update navigation context
+            updateNavigationContext();
+            
+            // Update date immediately
+            updateBreadcrumbDate();
+            
+            // Update date every minute
+            setInterval(updateBreadcrumbDate, 60000);
+        }
+        
+        /**
+         * Update breadcrumb navigation dynamically
+         * @param {string} currentPage - Current page name
+         * @param {string} parentPage - Parent page name
+         */
+        function updateBreadcrumb(currentPage, parentPage = 'Dashboard Utama') {
+            const breadcrumbNav = document.querySelector('.breadcrumb-nav');
+            if (breadcrumbNav) {
+                breadcrumbNav.innerHTML = `
+                    <span class="home-icon">🏠</span>
+                    <a href="#" onclick="goBackToDashboard()">${parentPage}</a>
+                    <span class="breadcrumb-separator">›</span>
+                    <span class="breadcrumb-current">${currentPage}</span>
+                `;
+            }
+        }
+        
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeBreadcrumb();
+        });
+        
+        // Make functions globally accessible
+        window.goBackToDashboard = goBackToDashboard;
+        window.updateBreadcrumbDate = updateBreadcrumbDate;
+        window.updateNavigationContext = updateNavigationContext;
+        window.initializeBreadcrumb = initializeBreadcrumb;
+        window.updateBreadcrumb = updateBreadcrumb;
+    </script>
+</body>
+</html>
